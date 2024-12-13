@@ -11,23 +11,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )/.." && pwd )"
 # Change into that directory
 cd "$DIR"
 
-# Get latest tag
-VERSION=$(git describe  --abbrev=0 --tags --match="v*")
+go get github.com/spf13/jwalterweatherman
+go get github.com/spf13/cobra
 
-# Determine the arch/os combos we're building for
-XC_ARCH=${XC_ARCH:-"386 amd64 arm"}
-XC_OS=${XC_OS:-linux darwin windows}
-
-gox \
-    -os="${XC_OS}" \
-    -arch="${XC_ARCH}" \
-    -ldflags "-X main.GitTag=${VERSION}" \
-    -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}" \
-    ./...
-
-# Done!
-echo
-echo "==> Results:"
-ls -hl dist/*
-
-ghr --username iangrunert --token $GITHUB_TOKEN --replace --prerelease --debug $VERSION dist/
+GOARCH=${BUILDARCH} go build
